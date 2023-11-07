@@ -56,17 +56,38 @@ print(f"Validation Batch Size:{batch_size}, number of batches:{len(valid_dataloa
 
 
 class NewModelHandler(FileSystemEventHandler):
-    def on_created(self, event):
-        print(event)
+    def on_created(self, event,max_retries=5):
         if event.is_directory:
             return None
 
         # Check for new model file
         if event.src_path.endswith('.pth'):
             print(f'New model file detected: {event.src_path}')
-            time.sleep(10)
-            # Here you can call a function to handle the validation
-            validate_model(event.src_path)
+
+            retries = 0
+            flag=0
+            while retries < max_retries:
+                try:
+                    flag=0            
+                    time.sleep(10)
+                    validate_model(event.src_path)
+                    break
+
+                except EOFError:
+                    # Wait before retrying
+                    flag=1
+                    time.sleep(5)
+                    retries += 1
+                    print(f"Retry {retries}/{max_retries}...")
+            if flag:
+                raise Exception(f"Failed to load model after {max_retries} retries.")
+
+
+
+
+
+
+
 
 logger = CSVLogger(f"/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/model_ckpts/{modelName}_val.csv")
 def validate_model(model_path):
