@@ -189,9 +189,9 @@ def save_checkpoint(epoch, model, optimizer, path):
     }
     torch.save(checkpoint, path)
 
-def load_checkpoint(path, model, optimizer):
+def load_checkpoint(path, model, optimizer,device='cpu'):
     if os.path.isfile(path):
-        checkpoint = torch.load(path)
+        checkpoint = torch.load(path,map_location=torch.device(device))
         model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         epoch = checkpoint['epoch']

@@ -1,7 +1,8 @@
 import sys
-sys.path.append('../dreamdiffusion/code/')
+sys.path.append('../dreamdiffusion/code/sc_mbm')
 # print(sys.path)
-import utils as ut
+# import utils as ut
+import  audioldm_train.modules.eeg_encoder.utils as ut
 import torch
 import torch.nn as nn
 import numpy as np
@@ -36,7 +37,7 @@ class MAEforEEG(nn.Module):
                  decoder_depth=8, decoder_num_heads=16,
                  mlp_ratio=4., norm_layer=nn.LayerNorm, focus_range=None, focus_rate=None, img_recon_weight=1.0, 
                  use_nature_img_loss=False):
-        super().__init__()
+        super(MAEforEEG,self).__init__()
 
         # --------------------------------------------------------------------------
         # MAE encoder specifics

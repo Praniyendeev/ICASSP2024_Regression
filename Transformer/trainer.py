@@ -39,7 +39,7 @@ num_epochs = 50
 ckpts_path = "/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/model_ckpts/"
 
 # Attempt to load the checkpoint if it exists
-loaded_epoch = load_checkpoint("/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/" + modelName +".pth" , model, optimizer)
+loaded_epoch = load_checkpoint("/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/" + modelName +".pth" , model, optimizer,device)
 
 # If a checkpoint was loaded, use its epoch and hyperparameters
 if loaded_epoch is not None:
@@ -51,6 +51,7 @@ max_batches =len(train_dataloader)
 train_start_time=time.time()
 MAE=torch.nn.L1Loss(reduction='none')
 print(f"Training Started. with {start_epoch}")
+
 for epoch in range(num_epochs):
     start_time = time.time()
     torch.cuda.empty_cache()
@@ -80,14 +81,15 @@ for epoch in range(num_epochs):
             break
 
     num_batches_processed = min(max_batches, len(train_dataloader))
-    avg_train_loss = total_train_loss / num_batches_processed
-    print(f"Epoch [{epoch + 1}/{num_epochs}] completed in {time.time() - start_time:.2f} seconds, "
+    avg_train_loss = total_train_loss / num_batcheds_processed
+    curr_epoch = start_epoch+epoch
+    print(f"Epoch [{curr_epoch + 1}/{num_epochs+start_epoch}] completed in {time.time() - start_time:.2f} seconds, "
         f"Average Training Loss: {avg_train_loss:.4f},")
-    if (epoch)%3==0:
-        save_checkpoint(epoch, model, optimizer, ckpts_path + modelName +f"_{epoch+1}_-_{num_epochs}_.pth")
-    save_checkpoint(epoch, model, optimizer, "/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/" + modelName +".pth")
+    if (epoch)%5==0:
+        save_checkpoint(curr_epoch, model, optimizer, ckpts_path + modelName +f"_{curr_epoch+1}_-_{num_epochs}_.pth")
+    save_checkpoint(curr_epoch, model, optimizer, "/mnt/nvme/node02/pranav/AE24/starDuck/Transformer/" + modelName +".pth")
 
-save_checkpoint(epoch, model, optimizer, ckpts_path + modelName +f"_{num_epochs}_-_{num_epochs}_.pth")
+save_checkpoint(curr_epoch, model, optimizer, ckpts_path + modelName +f"_{num_epochs}_-_{num_epochs}_.pth")
 
 print(f"Training completed in {time.time() - train_start_time:.2f} seconds ")
 
